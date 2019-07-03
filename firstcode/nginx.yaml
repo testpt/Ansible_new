@@ -1,0 +1,9 @@
+---
+ - hosts: grp1
+   become: true
+   tasks:
+     - name: installing nginx package
+       group: name=nginx state=installed
+
+     - name: starting nginx service
+       group: name=nginx state=started enabled=yes
