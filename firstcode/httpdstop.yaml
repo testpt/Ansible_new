@@ -1,0 +1,8 @@
+---
+ - hosts: grp1
+   become: true
+   tasks:
+     - name: uninstalling httpd package
+       yum: name=httpd state=removed
+
+           
