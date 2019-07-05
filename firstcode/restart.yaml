@@ -1,0 +1,26 @@
+---
+ - hosts: grp1
+   become: true
+
+   tasks:
+    - name: "Installing Packages"
+      yum: name={{item}} state=present disable_gpg_check=yes
+      with_items:
+       - httpd
+       - php
+       - mariadb-server
+      register: pkg_log
+
+    - name: "httpd pkg validation"
+      command: httpd -v
+      register: httpd_validation
+      when: pkg_log|success
+
+    - name: "copying index file"
+      copy: src=/git/Ansible_new/firstcode/index.html dest=/var/www/html/index.html
+      register: copy_log
+      when: httpd_validation|success
+
+    - name: "started httpd service"
+      service: name=httpd state=started
+      when: copy_log|success
