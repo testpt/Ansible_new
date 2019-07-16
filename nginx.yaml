@@ -1,0 +1,9 @@
+---
+ - hosts: grp1
+   become: true
+   tasks:
+     - name: installing httpd package
+       group: name=httpd state=installed
+
+     - name: starting nginx service
+       group: name=httpd state=started enabled=yes
