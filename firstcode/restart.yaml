@@ -16,11 +16,24 @@
       register: httpd_validation
       when: pkg_log|success
 
+    - name: "started httpd service"
+      service: name=httpd state=started
+      register: httpd_log
+      when: httpd_validation|success
+
     - name: "copying index file"
       copy: src=/git/Ansible_new/firstcode/index.html dest=/var/www/html/index.html
       register: copy_log
-      when: httpd_validation|success
+      when: httpd_log|success
+      notify:
+       - Restart_httpd
 
-    - name: "started httpd service"
-      service: name=httpd state=started
+    - name: "update config file"
+      lineinfile: dest=/etc/httpd/conf/httpd.conf state=present regexp="^Listen" line="Listen 8080"
       when: copy_log|success
+      notify:
+       - Restart_httpd
+
+   handlers:
+    - name: "Restart_httpd"
+      service: name=httpd state=restart
